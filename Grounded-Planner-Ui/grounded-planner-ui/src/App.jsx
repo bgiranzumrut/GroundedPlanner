@@ -1,58 +1,76 @@
 import { useEffect, useState } from "react";
 import WeeklyPlanCard from "./components/WeeklyPlanCard";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function App() {
   const [weeklyPlans, setWeeklyPlans] = useState([]);
   const [priorities, setPriorities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [newPriorityTitle, setNewPriorityTitle] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+const [newTaskDescription, setNewTaskDescription] = useState("");
+const [newTaskCategory, setNewTaskCategory] = useState("");
+const [newTaskDueDate, setNewTaskDueDate] = useState("");
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const weeklyPlansResponse = await fetch("https://localhost:7053/api/WeeklyPlans");
+  const fetchData = async () => {
+    try {
+      const weeklyPlansResponse = await fetch(`${API_BASE_URL}/api/WeeklyPlans`);
 
-        if (!weeklyPlansResponse.ok) {
-          throw new Error("Failed to fetch weekly plans.");
-        }
-
-        const weeklyPlansData = await weeklyPlansResponse.json();
-        setWeeklyPlans(weeklyPlansData);
-
-        if (weeklyPlansData.length > 0) {
-          const latestPlan = weeklyPlansData[0];
-
-          const prioritiesResponse = await fetch(
-            `https://localhost:7053/api/weeklyplans/${latestPlan.id}/priorities`
-          );
-
-          if (!prioritiesResponse.ok) {
-            throw new Error("Failed to fetch priorities.");
-          }
-
-          const prioritiesData = await prioritiesResponse.json();
-          setPriorities(prioritiesData);
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      if (!weeklyPlansResponse.ok) {
+        throw new Error("Failed to fetch weekly plans.");
       }
-    };
 
-    fetchData();
-  }, []);
+      const weeklyPlansData = await weeklyPlansResponse.json();
+      setWeeklyPlans(weeklyPlansData);
 
-  const latestPlan = weeklyPlans.length > 0 ? weeklyPlans[0] : null;
+      if (weeklyPlansData && weeklyPlansData.length > 0) {
+        const latestPlan = weeklyPlansData[0];
 
+        const prioritiesResponse = await fetch(
+          `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
+        );
+
+        if (!prioritiesResponse.ok) {
+          throw new Error("Failed to fetch priorities.");
+        }
+
+        const prioritiesData = await prioritiesResponse.json();
+        setPriorities(prioritiesData);
+
+        const tasksResponse = await fetch(
+          `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
+        );
+
+        if (!tasksResponse.ok) {
+          throw new Error("Failed to fetch tasks.");
+        }
+
+        const tasksData = await tasksResponse.json();
+        setTasks(tasksData);
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
+const latestPlan = weeklyPlans?.[0] ?? null;
 const handleAddPriority = async () => {
   if (!latestPlan || !newPriorityTitle.trim()) return;
 
   try {
     const response = await fetch(
-      `https://localhost:7053/api/weeklyplans/${latestPlan.id}/priorities`,
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`,
       {
         method: "POST",
         headers: {
@@ -71,14 +89,12 @@ const handleAddPriority = async () => {
 
     setNewPriorityTitle("");
 
-    // 🔥 Re-fetch from backend (source of truth)
     const prioritiesResponse = await fetch(
-      `https://localhost:7053/api/weeklyplans/${latestPlan.id}/priorities`
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
     );
 
     const updatedPriorities = await prioritiesResponse.json();
     setPriorities(updatedPriorities);
-
   } catch (err) {
     console.error("Create priority error:", err);
     setError(err.message);
@@ -89,8 +105,7 @@ const handleTogglePriority = async (priorityId) => {
   if (!latestPlan) return;
 
   try {
-    const response = await fetch(
-      `https://localhost:7053/api/weeklyplans/${latestPlan.id}/priorities/${priorityId}/complete`,
+    const response = await fetch(`${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities/${priorityId}/complete`,
       {
         method: "PATCH",
       }
@@ -101,8 +116,7 @@ const handleTogglePriority = async (priorityId) => {
     }
 
     // re-fetch priorities
-    const prioritiesResponse = await fetch(
-      `https://localhost:7053/api/weeklyplans/${latestPlan.id}/priorities`
+    const prioritiesResponse = await fetch(`${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
     );
 
     const updatedPriorities = await prioritiesResponse.json();
@@ -113,6 +127,74 @@ const handleTogglePriority = async (priorityId) => {
   }
 };
 
+const handleDeletePriority = async (priorityId) => {
+  if (!latestPlan) return;
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities/${priorityId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete priority.");
+    }
+
+    const prioritiesResponse = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
+    );
+
+    const updatedPriorities = await prioritiesResponse.json();
+    setPriorities(updatedPriorities);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
+const handleAddTask = async () => {
+  if (!latestPlan || !newTaskTitle.trim()) return;
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newTaskTitle,
+          description: newTaskDescription,
+          category: newTaskCategory,
+          dueDate: newTaskDueDate || null,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to create task.");
+    }
+
+    // reset inputs
+    setNewTaskTitle("");
+    setNewTaskDescription("");
+    setNewTaskCategory("");
+    setNewTaskDueDate("");
+
+    // re-fetch tasks
+    const tasksResponse = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
+    );
+
+    const updatedTasks = await tasksResponse.json();
+    setTasks(updatedTasks);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   return (
     <div
       style={{
@@ -177,10 +259,22 @@ const handleTogglePriority = async (priorityId) => {
 <WeeklyPlanCard
   plan={latestPlan}
   priorities={priorities}
+  tasks={tasks}
   newPriorityTitle={newPriorityTitle}
   setNewPriorityTitle={setNewPriorityTitle}
   onAddPriority={handleAddPriority}
   onTogglePriority={handleTogglePriority}
+  onDeletePriority={handleDeletePriority}
+
+  newTaskTitle={newTaskTitle}
+  setNewTaskTitle={setNewTaskTitle}
+  newTaskDescription={newTaskDescription}
+  setNewTaskDescription={setNewTaskDescription}
+  newTaskCategory={newTaskCategory}
+  setNewTaskCategory={setNewTaskCategory}
+  newTaskDueDate={newTaskDueDate}
+  setNewTaskDueDate={setNewTaskDueDate}
+  onAddTask={handleAddTask}
 />
         )}
       </div>

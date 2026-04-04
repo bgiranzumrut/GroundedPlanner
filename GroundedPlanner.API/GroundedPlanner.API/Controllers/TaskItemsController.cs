@@ -51,7 +51,7 @@ namespace GroundedPlanner.API.Controllers
             }
             var taskItems = await _context.TaskItems
                 .Where(t => t.WeeklyPlanId == weeklyPlanId)
-                .OrderBy(t => t.DueDate ?? DateTime.MaxValue)
+                .OrderBy(t => t.DueDate ?? DateOnly.MaxValue)
                 .ThenBy(t => t.CreatedAt)
                 .ToListAsync();
             return Ok(taskItems);
