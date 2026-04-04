@@ -1,0 +1,6 @@
+@GroundedPlanner.API_HostAddress = http://localhost:5023
+
+GET {{GroundedPlanner.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
