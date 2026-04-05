@@ -8,9 +8,11 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  getTodayView,
 } from "./services/api";
 import { useEffect, useState } from "react";
 import WeeklyPlanCard from "./components/WeeklyPlanCard";
+import TodayView from "./components/TodayView";
 import "./assets/styles/App.css";
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
 const [newTaskDescription, setNewTaskDescription] = useState("");
 const [newTaskCategory, setNewTaskCategory] = useState("");
 const [newTaskDueDate, setNewTaskDueDate] = useState("");
+const [todayView, setTodayView] = useState(null);
 
 
 useEffect(() => {
@@ -40,6 +43,9 @@ useEffect(() => {
 
         const tasksData = await getTasks(latestPlan.id);
         setTasks(tasksData);
+
+        const todayViewData = await getTodayView(latestPlan.id  );
+        setTodayView(todayViewData);
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -182,29 +188,40 @@ const handleDeleteTask = async (taskId) => {
         </div>
       )}
 
-      {!loading && !error && latestPlan && (
-        <WeeklyPlanCard
-          plan={latestPlan}
-          priorities={priorities}
-          tasks={tasks}
-          newPriorityTitle={newPriorityTitle}
-          setNewPriorityTitle={setNewPriorityTitle}
-          onAddPriority={handleAddPriority}
-          onTogglePriority={handleTogglePriority}
-          onDeletePriority={handleDeletePriority}
-          newTaskTitle={newTaskTitle}
-          setNewTaskTitle={setNewTaskTitle}
-          newTaskDescription={newTaskDescription}
-          setNewTaskDescription={setNewTaskDescription}
-          newTaskCategory={newTaskCategory}
-          setNewTaskCategory={setNewTaskCategory}
-          newTaskDueDate={newTaskDueDate}
-          setNewTaskDueDate={setNewTaskDueDate}
-          onAddTask={handleAddTask}
-          onToggleTask={handleToggleTask}
-          onDeleteTask={handleDeleteTask}
-        />
-      )}
+ {!loading && !error && latestPlan && (
+  <>
+    <WeeklyPlanCard
+      plan={latestPlan}
+      priorities={priorities}
+      tasks={tasks}
+      newPriorityTitle={newPriorityTitle}
+      setNewPriorityTitle={setNewPriorityTitle}
+      onAddPriority={handleAddPriority}
+      onTogglePriority={handleTogglePriority}
+      onDeletePriority={handleDeletePriority}
+      newTaskTitle={newTaskTitle}
+      setNewTaskTitle={setNewTaskTitle}
+      newTaskDescription={newTaskDescription}
+      setNewTaskDescription={setNewTaskDescription}
+      newTaskCategory={newTaskCategory}
+      setNewTaskCategory={setNewTaskCategory}
+      newTaskDueDate={newTaskDueDate}
+      setNewTaskDueDate={setNewTaskDueDate}
+      onAddTask={handleAddTask}
+      onToggleTask={handleToggleTask}
+      onDeleteTask={handleDeleteTask}
+    />
+
+    <div style={{ height: "24px" }} />
+
+    <TodayView
+      todayView={todayView}
+      onTogglePriority={handleTogglePriority}
+      onToggleTask={handleToggleTask}
+      onDeleteTask={handleDeleteTask}
+    />
+  </>
+)}
     </div>
   </div>
 );

@@ -28,8 +28,9 @@ namespace GroundedPlanner.API.Controllers
                 return NotFound($"Weekly plan with ID {weeklyPlanId} not found.");
             }
 
+            // Update query to include only incompleted priorities
             var priorities = await _context.Priorities
-                .Where(p => p.WeeklyPlanId == weeklyPlanId)
+                .Where(p => p.WeeklyPlanId == weeklyPlanId && !p.IsCompleted)
                 .OrderBy(p => p.SortOrder)
                 .Select(p => new TodayPriorityDto
                 {
@@ -41,7 +42,7 @@ namespace GroundedPlanner.API.Controllers
                 .ToListAsync();
 
             var tasks = await _context.TaskItems
-                .Where(t => t.WeeklyPlanId == weeklyPlanId)
+                .Where(t => t.WeeklyPlanId == weeklyPlanId && !t.IsCompleted)
                 .OrderBy(t => t.DueDate ?? DateOnly.MaxValue)
                 .ThenBy(t => t.CreatedAt)
                 .Select(t => new TodayTaskItemDto

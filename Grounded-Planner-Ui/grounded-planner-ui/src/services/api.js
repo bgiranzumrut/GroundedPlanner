@@ -108,3 +108,11 @@ export async function deleteTask(weeklyPlanId, taskId) {
 
   return handleResponse(response);
 }
+
+// Add Today Api function
+export async function getTodayView(weeklyPlanId) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/weeklyplans/${weeklyPlanId}/today`
+  );
+  return handleResponse(response);
+}
