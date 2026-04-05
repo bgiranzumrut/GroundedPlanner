@@ -1,0 +1,40 @@
+.app-shell {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  padding: 40px 20px;
+  color: var(--color-text);
+}
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.app-title {
+  font-size: 56px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.app-subtitle {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 40px;
+  color: var(--color-text-muted);
+}
+
+.app-message {
+  text-align: center;
+}
+
+.app-message--error {
+  color: red;
+}
+
+.empty-state {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}

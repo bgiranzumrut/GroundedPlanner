@@ -1,7 +1,17 @@
+import {
+  getWeeklyPlans,
+  getPriorities,
+  createPriority,
+  togglePriority,
+  deletePriority,
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "./services/api";
 import { useEffect, useState } from "react";
 import WeeklyPlanCard from "./components/WeeklyPlanCard";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import "./assets/styles/App.css";
 
 function App() {
   const [weeklyPlans, setWeeklyPlans] = useState([]);
@@ -16,41 +26,19 @@ const [newTaskCategory, setNewTaskCategory] = useState("");
 const [newTaskDueDate, setNewTaskDueDate] = useState("");
 
 
-  useEffect(() => {
+useEffect(() => {
   const fetchData = async () => {
     try {
-      const weeklyPlansResponse = await fetch(`${API_BASE_URL}/api/WeeklyPlans`);
-
-      if (!weeklyPlansResponse.ok) {
-        throw new Error("Failed to fetch weekly plans.");
-      }
-
-      const weeklyPlansData = await weeklyPlansResponse.json();
+      const weeklyPlansData = await getWeeklyPlans();
       setWeeklyPlans(weeklyPlansData);
 
       if (weeklyPlansData && weeklyPlansData.length > 0) {
         const latestPlan = weeklyPlansData[0];
 
-        const prioritiesResponse = await fetch(
-          `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
-        );
-
-        if (!prioritiesResponse.ok) {
-          throw new Error("Failed to fetch priorities.");
-        }
-
-        const prioritiesData = await prioritiesResponse.json();
+        const prioritiesData = await getPriorities(latestPlan.id);
         setPriorities(prioritiesData);
 
-        const tasksResponse = await fetch(
-          `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
-        );
-
-        if (!tasksResponse.ok) {
-          throw new Error("Failed to fetch tasks.");
-        }
-
-        const tasksData = await tasksResponse.json();
+        const tasksData = await getTasks(latestPlan.id);
         setTasks(tasksData);
       }
     } catch (err) {
@@ -65,36 +53,21 @@ const [newTaskDueDate, setNewTaskDueDate] = useState("");
 }, []);
 
 const latestPlan = weeklyPlans?.[0] ?? null;
+
 const handleAddPriority = async () => {
   if (!latestPlan || !newPriorityTitle.trim()) return;
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: newPriorityTitle,
-          sortOrder: priorities.length + 1,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to create priority.");
-    }
+    await createPriority(latestPlan.id, {
+      title: newPriorityTitle,
+      sortOrder: priorities.length + 1,
+    });
 
     setNewPriorityTitle("");
 
-    const prioritiesResponse = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
-    );
-
-    const updatedPriorities = await prioritiesResponse.json();
+    const updatedPriorities = await getPriorities(latestPlan.id);
     setPriorities(updatedPriorities);
+
   } catch (err) {
     console.error("Create priority error:", err);
     setError(err.message);
@@ -105,25 +78,13 @@ const handleTogglePriority = async (priorityId) => {
   if (!latestPlan) return;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities/${priorityId}/complete`,
-      {
-        method: "PATCH",
-      }
-    );
+    await togglePriority(latestPlan.id, priorityId);
 
-    if (!response.ok) {
-      throw new Error("Failed to update priority.");
-    }
-
-    // re-fetch priorities
-    const prioritiesResponse = await fetch(`${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
-    );
-
-    const updatedPriorities = await prioritiesResponse.json();
+    const updatedPriorities = await getPriorities(latestPlan.id);
     setPriorities(updatedPriorities);
-
   } catch (err) {
-    console.error(err);
+    console.error("Toggle priority error:", err);
+    setError(err.message);
   }
 };
 
@@ -131,100 +92,53 @@ const handleDeletePriority = async (priorityId) => {
   if (!latestPlan) return;
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities/${priorityId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    await deletePriority(latestPlan.id, priorityId);
 
-    if (!response.ok) {
-      throw new Error("Failed to delete priority.");
-    }
-
-    const prioritiesResponse = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/priorities`
-    );
-
-    const updatedPriorities = await prioritiesResponse.json();
+    const updatedPriorities = await getPriorities(latestPlan.id);
     setPriorities(updatedPriorities);
-
   } catch (err) {
-    console.error(err);
+    console.error("Delete priority error:", err);
+    setError(err.message);
   }
 };
+
 const handleAddTask = async () => {
   if (!latestPlan || !newTaskTitle.trim()) return;
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: newTaskTitle,
-          description: newTaskDescription,
-          category: newTaskCategory,
-          dueDate: newTaskDueDate || null,
-        }),
-      }
-    );
+    await createTask(latestPlan.id, {
+      title: newTaskTitle,
+      description: newTaskDescription || null,
+      category: newTaskCategory || null,
+      dueDate: newTaskDueDate || null,
+    });
 
-    if (!response.ok) {
-      throw new Error("Failed to create task.");
-    }
-
-    // reset inputs
     setNewTaskTitle("");
     setNewTaskDescription("");
     setNewTaskCategory("");
     setNewTaskDueDate("");
 
-    // re-fetch tasks
-    const tasksResponse = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
-    );
-
-    const updatedTasks = await tasksResponse.json();
+    const updatedTasks = await getTasks(latestPlan.id);
     setTasks(updatedTasks);
-
   } catch (err) {
-    console.error(err);
+    console.error("Create task error:", err);
+    setError(err.message);
   }
 };
+
 const handleToggleTask = async (task) => {
   if (!latestPlan) return;
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks/${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: task.title,
-          description: task.description,
-          category: task.category,
-          dueDate: task.dueDate,
-          isCompleted: !task.isCompleted,
-        }),
-      }
-    );
+    await updateTask(latestPlan.id, task.id, {
+      title: task.title,
+      description: task.description,
+      category: task.category,
+      dueDate: task.dueDate,
+      isCompleted: !task.isCompleted,
+    });
 
-    if (!response.ok) {
-      throw new Error("Failed to update task.");
-    }
-
-    const tasksResponse = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
-    );
-
-    const updatedTasks = await tasksResponse.json();
+    const updatedTasks = await getTasks(latestPlan.id);
     setTasks(updatedTasks);
   } catch (err) {
     console.error("Toggle task error:", err);
@@ -235,22 +149,9 @@ const handleDeleteTask = async (taskId) => {
   if (!latestPlan) return;
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks/${taskId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    await deleteTask(latestPlan.id, taskId);
 
-    if (!response.ok) {
-      throw new Error("Failed to delete task.");
-    }
-
-    const tasksResponse = await fetch(
-      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
-    );
-
-    const updatedTasks = await tasksResponse.json();
+    const updatedTasks = await getTasks(latestPlan.id);
     setTasks(updatedTasks);
   } catch (err) {
     console.error("Delete task error:", err);
@@ -258,92 +159,55 @@ const handleDeleteTask = async (taskId) => {
   }
 };
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#f7f5f2",
-        padding: "40px 20px",
-        fontFamily: "Arial, sans-serif",
-        color: "#2f2a26",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "56px",
-            textAlign: "center",
-            marginBottom: "10px",
-          }}
-        >
-          Grounded Planner
-        </h1>
+  <div className="app-shell">
+    <div className="app-container">
+      <h1 className="app-title">Grounded Planner</h1>
 
-        <p
-          style={{
-            textAlign: "center",
-            fontSize: "18px",
-            marginBottom: "40px",
-            color: "#6b625b",
-          }}
-        >
-          A calm space for your week and next steps.
-        </p>
+      <p className="app-subtitle">
+        A calm space for your week and next steps.
+      </p>
 
-        {loading && (
-          <p style={{ textAlign: "center" }}>Loading your weekly plan...</p>
-        )}
+      {loading && (
+        <p className="app-message">Loading your weekly plan...</p>
+      )}
 
-        {error && (
-          <p style={{ textAlign: "center", color: "red" }}>{error}</p>
-        )}
+      {error && (
+        <p className="app-message app-message--error">{error}</p>
+      )}
 
-        {!loading && !error && !latestPlan && (
-          <div
-            style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "16px",
-              padding: "24px",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-              textAlign: "center",
-            }}
-          >
-            <h2>No weekly plan yet</h2>
-            <p>Create your first weekly plan to get started.</p>
-          </div>
-        )}
+      {!loading && !error && !latestPlan && (
+        <div className="empty-state">
+          <h2>No weekly plan yet</h2>
+          <p>Create your first weekly plan to get started.</p>
+        </div>
+      )}
 
-        {!loading && !error && latestPlan && (
-<WeeklyPlanCard
-  plan={latestPlan}
-  priorities={priorities}
-  tasks={tasks}
-  newPriorityTitle={newPriorityTitle}
-  setNewPriorityTitle={setNewPriorityTitle}
-  onAddPriority={handleAddPriority}
-  onTogglePriority={handleTogglePriority}
-  onDeletePriority={handleDeletePriority}
-
-  newTaskTitle={newTaskTitle}
-  setNewTaskTitle={setNewTaskTitle}
-  newTaskDescription={newTaskDescription}
-  setNewTaskDescription={setNewTaskDescription}
-  newTaskCategory={newTaskCategory}
-  setNewTaskCategory={setNewTaskCategory}
-  newTaskDueDate={newTaskDueDate}
-  setNewTaskDueDate={setNewTaskDueDate}
-  onAddTask={handleAddTask}
-  onToggleTask={handleToggleTask}
-  onDeleteTask={handleDeleteTask}
-/>
-        )}
-      </div>
+      {!loading && !error && latestPlan && (
+        <WeeklyPlanCard
+          plan={latestPlan}
+          priorities={priorities}
+          tasks={tasks}
+          newPriorityTitle={newPriorityTitle}
+          setNewPriorityTitle={setNewPriorityTitle}
+          onAddPriority={handleAddPriority}
+          onTogglePriority={handleTogglePriority}
+          onDeletePriority={handleDeletePriority}
+          newTaskTitle={newTaskTitle}
+          setNewTaskTitle={setNewTaskTitle}
+          newTaskDescription={newTaskDescription}
+          setNewTaskDescription={setNewTaskDescription}
+          newTaskCategory={newTaskCategory}
+          setNewTaskCategory={setNewTaskCategory}
+          newTaskDueDate={newTaskDueDate}
+          setNewTaskDueDate={setNewTaskDueDate}
+          onAddTask={handleAddTask}
+          onToggleTask={handleToggleTask}
+          onDeleteTask={handleDeleteTask}
+        />
+      )}
     </div>
-  );
+  </div>
+);
 }
 
 export default App;

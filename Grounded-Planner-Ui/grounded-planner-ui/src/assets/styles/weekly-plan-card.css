@@ -1,0 +1,27 @@
+.weekly-plan-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-soft);
+}
+
+.weekly-plan-card__eyebrow {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-soft);
+  margin-bottom: 10px;
+}
+
+.weekly-plan-card__title {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.weekly-plan-card__meta {
+  margin-bottom: 14px;
+}
+
+.weekly-plan-card__meta--last {
+  margin-bottom: 20px;
+}

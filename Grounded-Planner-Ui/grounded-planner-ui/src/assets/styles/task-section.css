@@ -1,0 +1,83 @@
+.task-section {
+  margin-top: 35px;
+}
+
+.task-section__form {
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.task-section__input {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: 8px;
+}
+
+.task-section__button {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background-color: var(--color-text);
+  color: white;
+  cursor: pointer;
+}
+
+.task-section__list {
+  margin-top: 35px;
+}
+
+.task-section__title {
+  margin-bottom: 10px;
+}
+
+.task-section__empty {
+  color: #777;
+}
+
+.task-section__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.task-section__checkbox {
+  margin-top: 4px;
+}
+
+.task-section__content {
+  flex: 1;
+}
+
+.task-section__task-title {
+  font-weight: 500;
+}
+
+.task-section__task-title--completed {
+  font-weight: 500;
+  text-decoration: line-through;
+  color: var(--color-completed);
+}
+
+.task-section__description {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.task-section__meta {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.task-section__delete {
+  background: transparent;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  font-size: 14px;
+}
