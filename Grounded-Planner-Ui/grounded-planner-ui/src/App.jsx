@@ -195,6 +195,68 @@ const handleAddTask = async () => {
     console.error(err);
   }
 };
+const handleToggleTask = async (task) => {
+  if (!latestPlan) return;
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks/${task.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: task.title,
+          description: task.description,
+          category: task.category,
+          dueDate: task.dueDate,
+          isCompleted: !task.isCompleted,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update task.");
+    }
+
+    const tasksResponse = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
+    );
+
+    const updatedTasks = await tasksResponse.json();
+    setTasks(updatedTasks);
+  } catch (err) {
+    console.error("Toggle task error:", err);
+    setError(err.message);
+  }
+};
+const handleDeleteTask = async (taskId) => {
+  if (!latestPlan) return;
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks/${taskId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete task.");
+    }
+
+    const tasksResponse = await fetch(
+      `${API_BASE_URL}/api/weeklyplans/${latestPlan.id}/tasks`
+    );
+
+    const updatedTasks = await tasksResponse.json();
+    setTasks(updatedTasks);
+  } catch (err) {
+    console.error("Delete task error:", err);
+    setError(err.message);
+  }
+};
   return (
     <div
       style={{
@@ -275,6 +337,8 @@ const handleAddTask = async () => {
   newTaskDueDate={newTaskDueDate}
   setNewTaskDueDate={setNewTaskDueDate}
   onAddTask={handleAddTask}
+  onToggleTask={handleToggleTask}
+  onDeleteTask={handleDeleteTask}
 />
         )}
       </div>

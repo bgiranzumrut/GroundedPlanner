@@ -17,6 +17,8 @@ function WeeklyPlanCard({
   newTaskDueDate,
   setNewTaskDueDate,
   onAddTask,
+  onToggleTask,
+  onDeleteTask,
 }) {
   return (
     <div
@@ -217,15 +219,34 @@ function WeeklyPlanCard({
     <p style={{ color: "#777" }}>No tasks yet</p>
   )}
 
-  {tasks.map((task) => (
-    <div
-      key={task.id}
-      style={{
-        padding: "10px 0",
-        borderBottom: "1px solid #eee",
-      }}
-    >
-      <div style={{ fontWeight: "500" }}>{task.title}</div>
+{tasks.map((task) => (
+  <div
+    key={task.id}
+    style={{
+      display: "flex",
+      alignItems: "flex-start",
+      gap: "10px",
+      padding: "10px 0",
+      borderBottom: "1px solid #eee",
+    }}
+  >
+    <input
+      type="checkbox"
+      checked={task.isCompleted}
+      onChange={() => onToggleTask(task)}
+      style={{ marginTop: "4px" }}
+    />
+
+    <div style={{ flex: 1 }}>
+      <div
+        style={{
+          fontWeight: "500",
+          textDecoration: task.isCompleted ? "line-through" : "none",
+          color: task.isCompleted ? "#999" : "#000",
+        }}
+      >
+        {task.title}
+      </div>
 
       {task.description && (
         <div style={{ fontSize: "14px", color: "#666", marginTop: "4px" }}>
@@ -241,11 +262,25 @@ function WeeklyPlanCard({
 
       {task.dueDate && (
         <div style={{ fontSize: "13px", color: "#888", marginTop: "4px" }}>
-         Due: {task.dueDate}
+          Due: {task.dueDate}
         </div>
       )}
     </div>
-  ))}
+
+    <button
+      onClick={() => onDeleteTask(task.id)}
+      style={{
+        background: "transparent",
+        border: "none",
+        color: "#b00020",
+        cursor: "pointer",
+        fontSize: "14px",
+      }}
+    >
+      Delete
+    </button>
+  </div>
+))}
 </div>
     </div>
   );
