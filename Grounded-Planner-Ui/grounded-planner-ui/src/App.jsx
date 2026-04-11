@@ -74,6 +74,9 @@ const handleAddPriority = async () => {
     const updatedPriorities = await getPriorities(latestPlan.id);
     setPriorities(updatedPriorities);
 
+    const updatedTodayView = await getTodayView(latestPlan.id);
+    setTodayView(updatedTodayView);
+
   } catch (err) {
     console.error("Create priority error:", err);
     setError(err.message);
@@ -88,6 +91,10 @@ const handleTogglePriority = async (priorityId) => {
 
     const updatedPriorities = await getPriorities(latestPlan.id);
     setPriorities(updatedPriorities);
+
+    const updatedTodayView = await getTodayView(latestPlan.id);
+    setTodayView(updatedTodayView);
+
   } catch (err) {
     console.error("Toggle priority error:", err);
     setError(err.message);
@@ -102,6 +109,9 @@ const handleDeletePriority = async (priorityId) => {
 
     const updatedPriorities = await getPriorities(latestPlan.id);
     setPriorities(updatedPriorities);
+
+    const updatedTodayView = await getTodayView(latestPlan.id);
+    setTodayView(updatedTodayView);
   } catch (err) {
     console.error("Delete priority error:", err);
     setError(err.message);
@@ -126,6 +136,9 @@ const handleAddTask = async () => {
 
     const updatedTasks = await getTasks(latestPlan.id);
     setTasks(updatedTasks);
+
+    const updatedTodayView = await getTodayView(latestPlan.id);
+    setTodayView(updatedTodayView);
   } catch (err) {
     console.error("Create task error:", err);
     setError(err.message);
@@ -146,6 +159,9 @@ const handleToggleTask = async (task) => {
 
     const updatedTasks = await getTasks(latestPlan.id);
     setTasks(updatedTasks);
+
+    const updatedTodayView = await getTodayView(latestPlan.id);
+    setTodayView(updatedTodayView);
   } catch (err) {
     console.error("Toggle task error:", err);
     setError(err.message);
@@ -159,6 +175,9 @@ const handleDeleteTask = async (taskId) => {
 
     const updatedTasks = await getTasks(latestPlan.id);
     setTasks(updatedTasks);
+
+    const updatedTodayView = await getTodayView(latestPlan.id);
+    setTodayView(updatedTodayView);
   } catch (err) {
     console.error("Delete task error:", err);
     setError(err.message);
