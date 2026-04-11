@@ -23,10 +23,11 @@ function App() {
   const [newPriorityTitle, setNewPriorityTitle] = useState("");
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-const [newTaskDescription, setNewTaskDescription] = useState("");
-const [newTaskCategory, setNewTaskCategory] = useState("");
-const [newTaskDueDate, setNewTaskDueDate] = useState("");
-const [todayView, setTodayView] = useState(null);
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [newTaskCategory, setNewTaskCategory] = useState("");
+  const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [activeView, setActiveView] = useState("weekly");
+  const [todayView, setTodayView] = useState(null);
 
 
 useEffect(() => {
@@ -192,6 +193,30 @@ const handleDeleteTask = async (taskId) => {
         A calm space for your week and next steps.
       </p>
 
+<div className="app-view-toggle">
+  <button
+    className={
+      activeView === "weekly"
+        ? "app-view-toggle__button app-view-toggle__button--active"
+        : "app-view-toggle__button"
+    }
+    onClick={() => setActiveView("weekly")}
+  >
+    Weekly View
+  </button>
+
+  <button
+    className={
+      activeView === "today"
+        ? "app-view-toggle__button app-view-toggle__button--active"
+        : "app-view-toggle__button"
+    }
+    onClick={() => setActiveView("today")}
+  >
+    Today View
+  </button>
+</div>
+
       {loading && (
         <p className="app-message">Loading your weekly plan...</p>
       )}
@@ -207,39 +232,37 @@ const handleDeleteTask = async (taskId) => {
         </div>
       )}
 
- {!loading && !error && latestPlan && (
-  <>
-    <WeeklyPlanCard
-      plan={latestPlan}
-      priorities={priorities}
-      tasks={tasks}
-      newPriorityTitle={newPriorityTitle}
-      setNewPriorityTitle={setNewPriorityTitle}
-      onAddPriority={handleAddPriority}
-      onTogglePriority={handleTogglePriority}
-      onDeletePriority={handleDeletePriority}
-      newTaskTitle={newTaskTitle}
-      setNewTaskTitle={setNewTaskTitle}
-      newTaskDescription={newTaskDescription}
-      setNewTaskDescription={setNewTaskDescription}
-      newTaskCategory={newTaskCategory}
-      setNewTaskCategory={setNewTaskCategory}
-      newTaskDueDate={newTaskDueDate}
-      setNewTaskDueDate={setNewTaskDueDate}
-      onAddTask={handleAddTask}
-      onToggleTask={handleToggleTask}
-      onDeleteTask={handleDeleteTask}
-    />
+ {!loading && !error && latestPlan && activeView === "weekly" && (
+  <WeeklyPlanCard
+    plan={latestPlan}
+    priorities={priorities}
+    tasks={tasks}
+    newPriorityTitle={newPriorityTitle}
+    setNewPriorityTitle={setNewPriorityTitle}
+    onAddPriority={handleAddPriority}
+    onTogglePriority={handleTogglePriority}
+    onDeletePriority={handleDeletePriority}
+    newTaskTitle={newTaskTitle}
+    setNewTaskTitle={setNewTaskTitle}
+    newTaskDescription={newTaskDescription}
+    setNewTaskDescription={setNewTaskDescription}
+    newTaskCategory={newTaskCategory}
+    setNewTaskCategory={setNewTaskCategory}
+    newTaskDueDate={newTaskDueDate}
+    setNewTaskDueDate={setNewTaskDueDate}
+    onAddTask={handleAddTask}
+    onToggleTask={handleToggleTask}
+    onDeleteTask={handleDeleteTask}
+  />
+)}
 
-    <div style={{ height: "24px" }} />
-
-    <TodayView
-      todayView={todayView}
-      onTogglePriority={handleTogglePriority}
-      onToggleTask={handleToggleTask}
-      onDeleteTask={handleDeleteTask}
-    />
-  </>
+{!loading && !error && latestPlan && activeView === "today" && (
+  <TodayView
+    todayData={todayView}
+    onTogglePriority={handleTogglePriority}
+    onToggleTask={handleToggleTask}
+    onDeleteTask={handleDeleteTask}
+  />
 )}
     </div>
   </div>
