@@ -3,11 +3,16 @@ import "../assets/styles/priority-section.css";
 import "../assets/styles/task-section.css";
 
 function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) {
-  if (!todayData) return null;
+  if (!todayData) {
+    return <p className="today-empty-state">Loading today view...</p>;
+  }
+
+  const activePriorities = todayData.priorities.filter((p) => !p.isCompleted);
+  const incompleteTasks = todayData.tasks.filter((t) => !t.isCompleted);
 
   const hasNoContent =
-    todayData.priorities.length === 0 &&
-    todayData.tasks.length === 0;
+    activePriorities.length === 0 &&
+    incompleteTasks.length === 0;
 
   return (
     <div className="weekly-plan-card">
@@ -30,11 +35,11 @@ function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) 
         </div>
       )}
 
-      {todayData.priorities.length > 0 && (
+      {activePriorities.length > 0 && (
         <section className="priority-section">
           <h3 className="priority-section__title">Active Priorities</h3>
 
-          {todayData.priorities.map((priority) => (
+          {activePriorities.map((priority) => (
             <div key={priority.id} className="priority-section__item">
               <input
                 type="checkbox"
@@ -50,12 +55,12 @@ function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) 
         </section>
       )}
 
-      {todayData.tasks.length > 0 && (
+      {incompleteTasks.length > 0 && (
         <section className="task-section">
           <div className="task-section__list">
             <h3 className="task-section__title">Incomplete Tasks</h3>
 
-            {todayData.tasks.map((task) => (
+            {incompleteTasks.map((task) => (
               <div key={task.id} className="task-section__item">
                 <input
                   type="checkbox"
