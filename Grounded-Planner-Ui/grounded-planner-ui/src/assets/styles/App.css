@@ -38,3 +38,30 @@
   box-shadow: var(--shadow-soft);
   text-align: center;
 }
+
+.app-view-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.app-view-toggle__button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background-color: var(--color-surface);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.app-view-toggle__button:hover {
+  background-color: #f0ede8;
+}
+
+.app-view-toggle__button--active {
+  background-color: var(--color-text);
+  color: white;
+  border-color: var(--color-text);
+}
