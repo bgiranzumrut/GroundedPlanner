@@ -1,9 +1,10 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 async function handleResponse(response) {
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
+if (!response.ok) {
+  const errorText = await response.text();
+  throw new Error(`Request failed: ${response.status} - ${errorText}`);
+}
 
   if (response.status === 204) {
     return null;
@@ -11,7 +12,17 @@ async function handleResponse(response) {
 
   return response.json();
 }
+export async function createWeeklyPlan(payload) {
+  const response = await fetch(`${API_BASE_URL}/api/WeeklyPlans`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
+  return handleResponse(response);
+}
 export async function getWeeklyPlans() {
   const response = await fetch(`${API_BASE_URL}/api/WeeklyPlans`);
   return handleResponse(response);
@@ -115,4 +126,56 @@ export async function getTodayView(weeklyPlanId) {
     `${API_BASE_URL}/api/weeklyplans/${weeklyPlanId}/today`
   );
   return handleResponse(response);
+}
+
+export async function createMode(payload) {
+  const response = await fetch(`${API_BASE_URL}/api/mode`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+}
+
+export async function getCurrentMode() {
+  const response = await fetch(`${API_BASE_URL}/api/mode/current`);
+  return handleResponse(response);
+}
+
+// Add function to get focus session Api
+export async function startFocusSession(taskItemId, durationMinutes = 25) {
+  const res = await fetch(`${API_BASE_URL}/api/tasks/${taskItemId}/focus-sessions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ durationMinutes }),
+  });
+
+  return handleResponse(res);
+}
+
+export async function getFocusSessions(taskItemId) {
+  const res = await fetch(`${API_BASE_URL}/api/tasks/${taskItemId}/focus-sessions`);
+  return handleResponse(res);
+}
+
+export async function completeFocusSession(taskItemId, sessionId) {
+  const res = await fetch(
+    `${API_BASE_URL}/api/tasks/${taskItemId}/focus-sessions/${sessionId}/complete`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        endTime: new Date().toISOString(),
+      }),
+    }
+  );
+
+  return handleResponse(res);
 }

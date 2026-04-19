@@ -65,3 +65,38 @@
   color: white;
   border-color: var(--color-text);
 }
+
+.mode-setup__form {
+  margin-top: 24px;
+  text-align: left;
+}
+
+.mode-setup__label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.mode-setup__input,
+.mode-setup__textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: 16px;
+  font: inherit;
+}
+
+.mode-setup__textarea {
+  resize: vertical;
+}
+
+.mode-setup__button {
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  border: none;
+  background-color: var(--color-text);
+  color: white;
+  cursor: pointer;
+}
+

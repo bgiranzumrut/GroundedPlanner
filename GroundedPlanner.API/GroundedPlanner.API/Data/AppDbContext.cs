@@ -14,6 +14,10 @@ namespace GroundedPlanner.API.Data
 
 
         public DbSet<TaskItem> TaskItems { get; set; }
-    
+
+        public DbSet<ModeCycle> ModeCycles { get; set; }
+
+        public DbSet<FocusSession> FocusSessions { get; set; }
+
     }
 }

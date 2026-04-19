@@ -81,3 +81,8 @@
   cursor: pointer;
   font-size: 14px;
 }
+
+.task-section__meta--due-today {
+  font-weight: 600;
+  color: var(--color-text);
+}

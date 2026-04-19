@@ -1,6 +1,8 @@
 import "../assets/styles/weekly-plan-card.css";
 import "../assets/styles/priority-section.css";
 import "../assets/styles/task-section.css";
+import { getModeContent } from "../constants/modeContent";
+
 
 function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) {
   if (!todayData) {
@@ -13,31 +15,39 @@ function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) 
   const hasNoContent =
     activePriorities.length === 0 &&
     incompleteTasks.length === 0;
+ const modeContent = getModeContent(todayData.mode);
+   const todayString = new Date().toISOString().split("T")[0];
 
   return (
     <div className="weekly-plan-card">
-      <p className="weekly-plan-card__eyebrow">Today View</p>
 
-      <h2 className="weekly-plan-card__title">{todayData.title}</h2>
 
-      <div className="weekly-plan-card__meta">
-        <strong>Mode:</strong> {todayData.mode}
+      <h2 className="weekly-plan-card__title">Today</h2>
+            <p className="weekly-plan-card__meta">
+        <strong>This week:</strong> {todayData.title}
+      </p>
+            <p className="weekly-plan-card__prompt">{modeContent.todayPrompt}</p>
+
+           <p className="weekly-plan-card__eyebrow">{modeContent.todayEyebrow}</p>
+
+          <div className="weekly-plan-card__meta weekly-plan-card__meta--last">
+        <strong>Today’s grounding note:</strong> {todayData.weeklyFocusNote}
       </div>
 
-      <div className="weekly-plan-card__meta weekly-plan-card__meta--last">
-        <strong>Focus Note:</strong> {todayData.weeklyFocusNote}
-      </div>
-
-      {hasNoContent && (
+           {hasNoContent && (
         <div className="today-empty-state">
           <h3>You’re clear for today</h3>
-          <p>No active priorities or tasks. Take a breath or plan something meaningful.</p>
+          <p>
+            No active priorities or tasks.
+            <br />
+            Use this space to rest, reflect, or move one meaningful thing forward.
+          </p>
         </div>
       )}
 
       {activePriorities.length > 0 && (
         <section className="priority-section">
-          <h3 className="priority-section__title">Active Priorities</h3>
+                   <h3 className="priority-section__title">What matters most today</h3>
 
           {activePriorities.map((priority) => (
             <div key={priority.id} className="priority-section__item">
@@ -58,7 +68,7 @@ function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) 
       {incompleteTasks.length > 0 && (
         <section className="task-section">
           <div className="task-section__list">
-            <h3 className="task-section__title">Incomplete Tasks</h3>
+                       <h3 className="task-section__title">Next actions</h3>
 
             {incompleteTasks.map((task) => (
               <div key={task.id} className="task-section__item">
@@ -84,9 +94,17 @@ function TodayView({ todayData, onTogglePriority, onToggleTask, onDeleteTask }) 
                     </div>
                   )}
 
-                  {task.dueDate && (
-                    <div className="task-section__meta">
-                      Due: {task.dueDate}
+                                 {task.dueDate && (
+                    <div
+                      className={
+                        task.dueDate === todayString
+                          ? "task-section__meta task-section__meta--due-today"
+                          : "task-section__meta"
+                      }
+                    >
+                      {task.dueDate === todayString
+                        ? `Due today: ${task.dueDate}`
+                        : `Due: ${task.dueDate}`}
                     </div>
                   )}
                 </div>

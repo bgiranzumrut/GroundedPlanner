@@ -1,6 +1,7 @@
 import "../assets/styles/weekly-plan-card.css";
 import PrioritySection from "./PrioritySection";
 import TaskSection from "./TaskSection";
+import { getModeContent } from "../constants/modeContent";
 
 function WeeklyPlanCard({
   plan,
@@ -22,12 +23,27 @@ function WeeklyPlanCard({
   onAddTask,
   onToggleTask,
   onDeleteTask,
+  activeFocusTaskId,
+  activeSession,
+  timeRemaining,
+  isTimerRunning,
+  onStartFocus,
+  onCompleteFocus,
+  onToggleTimer,
+    sessionCompleted,
+  isBreakMode,
+  onContinueFocus,
+  onStartBreak,
+  onEndFocus,
 }) {
+
+  const modeContent = getModeContent(plan.mode);
   return (
     <div className="weekly-plan-card">
-      <p className="weekly-plan-card__eyebrow">Current Weekly Plan</p>
+            <p className="weekly-plan-card__eyebrow">{modeContent.weeklyEyebrow}</p>
 
       <h2 className="weekly-plan-card__title">{plan.title}</h2>
+            <p className="weekly-plan-card__prompt">{modeContent.weeklyPrompt}</p>
 
       <div className="weekly-plan-card__meta">
         <strong>Mode:</strong> {plan.mode}
@@ -51,7 +67,7 @@ function WeeklyPlanCard({
         onDeletePriority={onDeletePriority}
       />
 
-      <TaskSection
+         <TaskSection
         tasks={tasks}
         newTaskTitle={newTaskTitle}
         setNewTaskTitle={setNewTaskTitle}
@@ -64,6 +80,19 @@ function WeeklyPlanCard({
         onAddTask={onAddTask}
         onToggleTask={onToggleTask}
         onDeleteTask={onDeleteTask}
+        activeFocusTaskId={activeFocusTaskId}
+        activeSession={activeSession}
+        timeRemaining={timeRemaining}
+        isTimerRunning={isTimerRunning}
+        onStartFocus={onStartFocus}
+        onCompleteFocus={onCompleteFocus}
+        onToggleTimer={onToggleTimer}
+        sessionCompleted={sessionCompleted}
+        isBreakMode={isBreakMode}
+        onContinueFocus={onContinueFocus}
+        onStartBreak={onStartBreak}
+        onEndFocus={onEndFocus}
+
       />
     </div>
   );

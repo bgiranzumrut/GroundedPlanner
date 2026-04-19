@@ -3,7 +3,9 @@ import WeeklyPlanCard from "./components/WeeklyPlanCard";
 import TodayView from "./components/TodayView";
 import { useWeeklyPlan } from "./hooks/useWeeklyPlan";
 import "./assets/styles/App.css";
-
+import { getModeContent } from "./constants/modeContent";
+import ModeSetup from "./components/ModeSetup";
+import WeeklyPlanSetup from "./components/WeeklyPlanSetup";
 function App() {
   const [activeView, setActiveView] = useState("weekly");
 
@@ -30,16 +32,42 @@ function App() {
     handleAddTask,
     handleToggleTask,
     handleDeleteTask,
+    currentMode,
+    newMode,
+    setNewMode,
+    newModeIntention,
+    setNewModeIntention,
+    handleCreateMode,
+    newWeeklyPlanTitle,
+    setNewWeeklyPlanTitle,
+    newWeekStartDate,
+    setNewWeekStartDate,
+    newWeeklyFocusNote,
+    setNewWeeklyFocusNote,
+    handleCreateWeeklyPlan,
+    activeFocusTaskId,
+    activeSession,
+    timeRemaining,
+    isTimerRunning,
+    handleStartFocus,
+    handleCompleteFocus,
+    toggleTimer,
+    sessionCompleted,
+    isBreakMode,
+    handleContinueFocus,
+    handleStartBreak,
+    handleEndFocus,
   } = useWeeklyPlan();
+
+  const activeMode = latestPlan?.mode;
+  const modeContent = getModeContent(activeMode);
 
   return (
     <div className="app-shell">
       <div className="app-container">
         <h1 className="app-title">Grounded Planner</h1>
 
-        <p className="app-subtitle">
-          A calm space for your week and next steps.
-        </p>
+               <p className="app-subtitle">{modeContent.appSubtitle}</p>
 
         <div className="app-view-toggle">
           <button
@@ -73,11 +101,35 @@ function App() {
           <p className="app-message app-message--error">{error}</p>
         )}
 
-        {!loading && !error && !latestPlan && (
-          <div className="empty-state">
-            <h2>No weekly plan yet</h2>
-            <p>Create your first weekly plan to get started.</p>
-          </div>
+                {!loading && !error && !currentMode && (
+          <ModeSetup
+            newMode={newMode}
+            setNewMode={setNewMode}
+            newModeIntention={newModeIntention}
+            setNewModeIntention={setNewModeIntention}
+            onCreateMode={handleCreateMode}
+          />
+        )}
+
+                   {!loading && !error && currentMode && !latestPlan && (
+          <WeeklyPlanSetup
+            currentMode={currentMode}
+            newWeeklyPlanTitle={newWeeklyPlanTitle}
+            setNewWeeklyPlanTitle={setNewWeeklyPlanTitle}
+            newWeekStartDate={newWeekStartDate}
+            setNewWeekStartDate={setNewWeekStartDate}
+            newWeeklyFocusNote={newWeeklyFocusNote}
+            setNewWeeklyFocusNote={setNewWeeklyFocusNote}
+            onCreateWeeklyPlan={handleCreateWeeklyPlan}
+            activeFocusTaskId={activeFocusTaskId}
+            activeSession={activeSession}
+            timeRemaining={timeRemaining}
+            isTimerRunning={isTimerRunning}
+            onStartFocus={handleStartFocus}
+            onCompleteFocus={handleCompleteFocus}
+            onToggleTimer={toggleTimer}
+
+          />
         )}
 
         {!loading && !error && latestPlan && activeView === "weekly" && (
@@ -101,6 +153,18 @@ function App() {
             onAddTask={handleAddTask}
             onToggleTask={handleToggleTask}
             onDeleteTask={handleDeleteTask}
+            activeFocusTaskId={activeFocusTaskId}
+            activeSession={activeSession}
+            timeRemaining={timeRemaining}
+            isTimerRunning={isTimerRunning}
+            onStartFocus={handleStartFocus}
+            onCompleteFocus={handleCompleteFocus}
+            onToggleTimer={toggleTimer}
+            sessionCompleted={sessionCompleted}
+            isBreakMode={isBreakMode}
+            onContinueFocus={handleContinueFocus}
+            onStartBreak={handleStartBreak}
+            onEndFocus={handleEndFocus}
           />
         )}
 

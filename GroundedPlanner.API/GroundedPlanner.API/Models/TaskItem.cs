@@ -13,5 +13,7 @@
         public DateOnly? DueDate { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime CreatedAt { get; internal set; }
+
+        public List<FocusSession> FocusSessions { get; set; } = new();
     }
 }

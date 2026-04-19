@@ -2,6 +2,7 @@
 using GroundedPlanner.API.DTOs;
 using GroundedPlanner.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroundedPlanner.API.Controllers
 {
@@ -19,11 +20,21 @@ namespace GroundedPlanner.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateWeeklyPlan(CreateWeeklyPlanDto dto)
         {
+            var activeModeCycle = await _context.ModeCycles
+        .FirstOrDefaultAsync(m => m.IsActive);
+
+            if (activeModeCycle == null)
+            {
+                return BadRequest("No active mode found. Please set a current mode before creating a weekly plan.");
+            }
+
+            var weekStartUtc = DateTime.SpecifyKind(dto.WeekStartDate, DateTimeKind.Utc);
+
             var weeklyPlan = new WeeklyPlan
             {
-                Mode = dto.Mode,
+                Mode = activeModeCycle.Mode,
                 Title = dto.Title,
-                WeekStartDate = dto.WeekStartDate,
+                WeekStartDate = weekStartUtc,
                 WeeklyFocusNote = dto.WeeklyFocusNote,
                 CreatedAt = DateTime.UtcNow
             };

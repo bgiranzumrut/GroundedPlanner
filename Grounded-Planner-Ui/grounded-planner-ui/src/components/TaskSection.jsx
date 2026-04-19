@@ -1,4 +1,5 @@
 import "../assets/styles/task-section.css";
+import FocusSessionPanel from "./FocusSessionPanel";
 
 function TaskSection({
   tasks,
@@ -13,6 +14,18 @@ function TaskSection({
   onAddTask,
   onToggleTask,
   onDeleteTask,
+  activeFocusTaskId,
+  activeSession,
+  timeRemaining,
+  isTimerRunning,
+  onStartFocus,
+  onCompleteFocus,
+  onToggleTimer,
+  sessionCompleted,
+isBreakMode,
+onContinueFocus,
+onStartBreak,
+onEndFocus,
 }) {
   return (
     <section className="task-section">
@@ -69,6 +82,8 @@ function TaskSection({
               className="task-section__checkbox"
             />
 
+
+
             <div className="task-section__content">
               <div
                 className={
@@ -98,6 +113,21 @@ function TaskSection({
                 </div>
               )}
             </div>
+
+
+<FocusSessionPanel
+  taskId={task.id}
+  activeFocusTaskId={activeFocusTaskId}
+  timeRemaining={timeRemaining}
+  isTimerRunning={isTimerRunning}
+  sessionCompleted={sessionCompleted}
+  isBreakMode={isBreakMode}
+  onStart={onStartFocus}
+  onToggle={onToggleTimer}
+  onContinue={onContinueFocus}
+  onBreak={onStartBreak}
+  onEnd={onEndFocus}
+/>
 
             <button
               onClick={() => onDeleteTask(task.id)}

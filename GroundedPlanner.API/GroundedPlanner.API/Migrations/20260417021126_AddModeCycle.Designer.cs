@@ -3,6 +3,7 @@ using System;
 using GroundedPlanner.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GroundedPlanner.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260417021126_AddModeCycle")]
+    partial class AddModeCycle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,36 +24,6 @@ namespace GroundedPlanner.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("GroundedPlanner.API.Models.FocusSession", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("TaskItemId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskItemId");
-
-                    b.ToTable("FocusSessions");
-                });
 
             modelBuilder.Entity("GroundedPlanner.API.Models.ModeCycle", b =>
                 {
@@ -180,17 +153,6 @@ namespace GroundedPlanner.API.Migrations
                     b.ToTable("WeeklyPlans");
                 });
 
-            modelBuilder.Entity("GroundedPlanner.API.Models.FocusSession", b =>
-                {
-                    b.HasOne("GroundedPlanner.API.Models.TaskItem", "TaskItem")
-                        .WithMany("FocusSessions")
-                        .HasForeignKey("TaskItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TaskItem");
-                });
-
             modelBuilder.Entity("GroundedPlanner.API.Models.Priority", b =>
                 {
                     b.HasOne("GroundedPlanner.API.Models.WeeklyPlan", "WeeklyPlan")
@@ -211,11 +173,6 @@ namespace GroundedPlanner.API.Migrations
                         .IsRequired();
 
                     b.Navigation("WeeklyPlan");
-                });
-
-            modelBuilder.Entity("GroundedPlanner.API.Models.TaskItem", b =>
-                {
-                    b.Navigation("FocusSessions");
                 });
 
             modelBuilder.Entity("GroundedPlanner.API.Models.WeeklyPlan", b =>
